@@ -4,21 +4,21 @@ import java.sql.Timestamp;
 
 public class Payment {
     private String title;
-    private Timestamp date_of_payment;
+    private Timestamp dateOfPayment;
     private int price;
-    private int student_id;
+    private int studentId;
 
     public Payment() {
     }
 
     public Payment(String title,
-                   Timestamp date_of_payment,
+                   Timestamp dateOfPayment,
                    int price,
-                   int student_id) {
+                   int studentId) {
         this.title = title;
-        this.date_of_payment = date_of_payment;
+        this.dateOfPayment = dateOfPayment;
         this.price = price;
-        this.student_id = student_id;
+        this.studentId = studentId;
     }
 
     public String getTitle() {
@@ -29,12 +29,12 @@ public class Payment {
         this.title = title;
     }
 
-    public Timestamp getDate_of_payment() {
-        return date_of_payment;
+    public Timestamp getDateOfPayment() {
+        return dateOfPayment;
     }
 
-    public void setDate_of_payment(Timestamp date_of_payment) {
-        this.date_of_payment = date_of_payment;
+    public void setDateOfPayment(Timestamp dateOfPayment) {
+        this.dateOfPayment = dateOfPayment;
     }
 
     public int getPrice() {
@@ -45,21 +45,21 @@ public class Payment {
         this.price = price;
     }
 
-    public int getStudent_id() {
-        return student_id;
+    public int getStudentId() {
+        return studentId;
     }
 
-    public void setStudent_id(int student_id) {
-        this.student_id = student_id;
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
     @Override
     public String toString() {
         return "Payment{" +
                 "title='" + title + '\'' +
-                ", date_of_payment=" + date_of_payment +
+                ", dateOfPayment=" + dateOfPayment +
                 ", price=" + price +
-                ", student_id=" + student_id +
+                ", studentId=" + studentId +
                 '}';
     }
 }

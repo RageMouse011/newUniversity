@@ -11,7 +11,7 @@ public class PaymentSQL {
     String user = "postgres";
     String password = "Q12we34r56t";
 
-    public boolean create() {
+    public boolean create(String title, int price, int studentId) {
 
         boolean result = false;
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
@@ -19,10 +19,10 @@ public class PaymentSQL {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(create);
-            ps.setString(1, "quarter-annual");
+            ps.setString(1, title);
             ps.setTimestamp(2, new Timestamp(new Date().getTime()));
-            ps.setInt(3, 130000);
-            ps.setInt(4, 25);
+            ps.setInt(3, price);
+            ps.setInt(4, studentId);
 
             ps.execute();
             result = true;
@@ -39,15 +39,15 @@ public class PaymentSQL {
         }
     }
 
-    public boolean update() {
+    public boolean update(Integer price, Integer id) {
         boolean result = false;
         String update = "update payment set price= ? where id= ?";
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(update);
-            ps.setInt(1, 520000);
-            ps.setInt(2, 1);
+            ps.setInt(1, price);
+            ps.setInt(2, id);
 
             ps.execute();
             result = true;
@@ -100,7 +100,7 @@ public class PaymentSQL {
         }
     }
 
-    public List<String> retrieveStudentsPayments() {
+    public List<String> retrieveStudentsPayments(int Id) {
         List<String> result = new ArrayList<>();
         String retrieve = "select s.first_name, s.last_name, sum(p.price) from student s join payment p " +
                 "on s.id = ? and p.student_id = ? group by s.first_name, s.last_name";
@@ -108,8 +108,8 @@ public class PaymentSQL {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(retrieve);
-            ps.setInt(1, 23);
-            ps.setInt(2, 23);
+            ps.setInt(1, Id);
+            ps.setInt(2, Id);
 
             ResultSet rs = ps.executeQuery();
             int sum = 0;
