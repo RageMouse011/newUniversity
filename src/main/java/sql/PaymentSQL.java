@@ -12,7 +12,6 @@ public class PaymentSQL {
     String password = "Q12we34r56t";
 
     public boolean create(String title, int price, int studentId) {
-
         boolean result = false;
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
         try {
@@ -24,19 +23,15 @@ public class PaymentSQL {
             ps.setInt(3, price);
             ps.setInt(4, studentId);
 
-            ps.execute();
-            result = true;
+            result = ps.execute();
 
             ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            result = false;
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             connClose();
-            return result;
         }
+        return result;
     }
 
     public boolean update(Integer price, Integer id) {
@@ -52,18 +47,14 @@ public class PaymentSQL {
             ps.execute();
             result = true;
 
-
             ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             result = false;
         } finally {
             connClose();
-            return result;
         }
+        return result;
     }
 
     public List<String> retrieveAllStudentsPayments() {
@@ -76,7 +67,7 @@ public class PaymentSQL {
             PreparedStatement ps = conn.prepareStatement(retrieve);
 
             ResultSet rs = ps.executeQuery();
-            int sum = 0;
+            int sum;
             while(rs.next()) {
                 result.add(rs.getString("first_name"));
                 result.add(rs.getString("last_name"));
@@ -84,20 +75,14 @@ public class PaymentSQL {
                 result.add(String.valueOf(sum));
             }
 
-
             ps.close();
             rs.close();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
         } finally {
             connClose();
-            System.out.println(result);
-            return result;
         }
+        return result;
     }
 
     public List<String> retrieveStudentsPayments(int Id) {
@@ -112,7 +97,7 @@ public class PaymentSQL {
             ps.setInt(2, Id);
 
             ResultSet rs = ps.executeQuery();
-            int sum = 0;
+            int sum;
             while(rs.next()) {
                 result.add(rs.getString("first_name"));
                 result.add(rs.getString("last_name"));
@@ -120,20 +105,14 @@ public class PaymentSQL {
                 result.add(String.valueOf(sum));
             }
 
-
             ps.close();
             rs.close();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
         } finally {
             connClose();
-            System.out.println(result);
-            return result;
         }
+        return result;
     }
     public void connClose() {
         try {

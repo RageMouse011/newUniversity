@@ -53,10 +53,14 @@ public class Application {
                     studentSQL.create(student);
                     break;
                 case 2:
-                    System.out.println("Enter new faculty: ");
+                    System.out.println("Enter the id of student: ");
                     Scanner getCase2 = new Scanner(System.in);
-                    String inputCase2 = getCase2.next();
-                    studentSQL.update(inputCase2);
+                    int inputCase21 = getCase2.nextInt();
+                    System.out.println("Enter new faculty: ");
+                    String inputCase24 = getCase2.next();
+                    studentSQL.update(inputCase21, inputCase24);
+
+
                     break;
                 case 3:
                     System.out.println("Enter the id of student which you want to remove: ");

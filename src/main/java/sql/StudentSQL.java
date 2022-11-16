@@ -12,8 +12,7 @@ public class StudentSQL {
     String user = "postgres";
     String password = "Q12we34r56t";
 
-    public boolean create(Student student) {
-        boolean result = false;
+    public Student create(Student student) {
         String create = "insert into student (first_name, last_name, faculty) values (?, ?, ?)";
         try {
             Class.forName("org.postgresql.Driver");
@@ -23,7 +22,7 @@ public class StudentSQL {
             ps.setString(2, student.getLastName());
             ps.setString(3, student.getFaculty());
 
-            result = ps.execute();
+            ps.execute();
 
             ps.close();
         } catch (SQLException | ClassNotFoundException e) {
@@ -31,45 +30,71 @@ public class StudentSQL {
         } finally {
             connClose();
         }
-        System.out.println(result);
-        return result;
+        return student;
     }
 
-    public boolean update(String faculty) {
-        boolean result = false;
+    public Student update(int id, String faculty) {
+        Student student = new Student();
         String update = "update student set faculty= ? where id= ?";
+        String getUpdatedStudent = "select first_name, last_name, faculty from student where id = ?";
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(update);
             ps.setString(1, faculty);
-            ps.setInt(2, 23);
+            ps.setInt(2, id);
 
-            result = ps.execute();
+            ps.execute();
 
+            ps = conn.prepareStatement(getUpdatedStudent);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                student.setFirstName(rs.getString(1));
+                student.setLastName(rs.getString(2));
+                student.setFaculty(rs.getString(3));
+            }
             ps.close();
+            rs.close();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             connClose();
         }
-        return result;
+        return student;
     }
 
-    public boolean delete(int inputCase3) {
-        boolean result = false;
+    public Student delete(int id) {
+        Student student = new Student();
         String deleteAllPayments = "delete from payment where student_id =?";
-        String delete = "delete from student where id = ?";
+        String deleteStudent = "delete from student where id = ?";
+        String getDeletedStudent = "select first_name, last_name, faculty from student where id = ?";
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(deleteAllPayments);
-            ps.setInt(1, inputCase3);
-            ps.execute();
-            ps = conn.prepareStatement(delete);
-            ps.setInt(1, inputCase3);
+            ps.setInt(1, id);
 
-            result = ps.execute();
+            ps.execute();
+
+            ps = conn.prepareStatement(deleteStudent);
+            ps.setInt(1, id);
+
+            ps.execute();
+
+            try {
+                ps = conn.prepareStatement(getDeletedStudent);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    student.setFirstName(rs.getString(1));
+                    student.setLastName(rs.getString(2));
+                    student.setFaculty(rs.getString(3));
+                }
+            } catch (Exception e) {
+                System.out.println("Student was successfully removed or he didn't even exist.");
+            }
+
+
 
             ps.close();
         } catch (SQLException | ClassNotFoundException e) {
@@ -77,17 +102,18 @@ public class StudentSQL {
         } finally {
             connClose();
         }
-        return result;
+        System.out.println(student);
+        return student;
     }
 
-    public Student getStudentById(int inputCase8) {
+    public Student getStudentById(int id) {
         String getStudentById = "select first_name, last_name, faculty from student where id =?";
         Student student = new Student();
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(url, user, password);
             PreparedStatement ps = conn.prepareStatement(getStudentById);
-            ps.setInt(1, inputCase8);
+            ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
 
@@ -104,7 +130,6 @@ public class StudentSQL {
         } finally {
             connClose();
         }
-        System.out.println(student);
         return student;
     }
 
@@ -132,7 +157,6 @@ public class StudentSQL {
         } finally {
             connClose();
         }
-        System.out.println(result);
         return result;
     }
 
