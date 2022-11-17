@@ -1,69 +1,79 @@
 package sql;
 
+import entities.Payment;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 public class PaymentSQL {
-    Connection conn = null;
-    String url = "jdbc:postgresql://localhost:5432/university";
-    String user = "postgres";
-    String password = "Q12we34r56t";
-
-    public boolean create(String title, int price, int studentId) {
-        boolean result = false;
+    Connection conn = getConnection();
+    public Payment create(Payment payment) {
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, password);
+            getConnection();
             PreparedStatement ps = conn.prepareStatement(create);
-            ps.setString(1, title);
-            ps.setTimestamp(2, new Timestamp(new Date().getTime()));
-            ps.setInt(3, price);
-            ps.setInt(4, studentId);
-
-            result = ps.execute();
-
-            ps.close();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            connClose();
-        }
-        return result;
-    }
-
-    public boolean update(Integer price, Integer id) {
-        boolean result = false;
-        String update = "update payment set price= ? where id= ?";
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, password);
-            PreparedStatement ps = conn.prepareStatement(update);
-            ps.setInt(1, price);
-            ps.setInt(2, id);
+            ps.setString(1, payment.getTitle());
+            ps.setTimestamp(2, payment.getDateOfPayment());
+            ps.setInt(3, payment.getPrice());
+            ps.setInt(4, payment.getStudentId());
 
             ps.execute();
-            result = true;
 
             ps.close();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            result = false;
         } finally {
             connClose();
         }
-        return result;
+        System.out.println(payment);
+        return payment;
+    }
+
+    public Payment update(int id, String title, int price) {
+        String update = "update payment set title =?, price =? where id= ?";
+        String getUpdatedPayment = "select title, date_of_payment, price, student_id from payment where id =?";
+        Payment payment = new Payment();
+        try {
+            getConnection();
+            PreparedStatement ps = conn.prepareStatement(update);
+            ps.setString(1, title);
+            ps.setInt(2, price);
+            ps.setInt(3, id);
+
+            ps.execute();
+
+            ps = conn.prepareStatement(getUpdatedPayment);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                payment.setTitle(rs.getString(1));
+                payment.setDateOfPayment(rs.getTimestamp(2));
+                payment.setPrice(rs.getInt(3));
+                payment.setStudentId(rs.getInt(4));
+            }
+
+            ps.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connClose();
+        }
+        System.out.println(payment);
+        return payment;
     }
 
     public List<String> retrieveAllStudentsPayments() {
-        List<String> result = new ArrayList<>();
         String retrieve = "select s.id, s.first_name, s.last_name, sum(p.price) from student s join payment p " +
                 "on s.id = p.student_id group by s.id, s.first_name, s.last_name";
+        List<String> result = new ArrayList<>();
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, password);
+            getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
 
             ResultSet rs = ps.executeQuery();
@@ -77,7 +87,7 @@ public class PaymentSQL {
 
             ps.close();
             rs.close();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             connClose();
@@ -86,12 +96,11 @@ public class PaymentSQL {
     }
 
     public List<String> retrieveStudentsPayments(int Id) {
-        List<String> result = new ArrayList<>();
         String retrieve = "select s.first_name, s.last_name, sum(p.price) from student s join payment p " +
                 "on s.id = ? and p.student_id = ? group by s.first_name, s.last_name";
+        List<String> result = new ArrayList<>();
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, password);
+            getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
             ps.setInt(1, Id);
             ps.setInt(2, Id);
@@ -107,12 +116,48 @@ public class PaymentSQL {
 
             ps.close();
             rs.close();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             connClose();
         }
+        System.out.println(result);
         return result;
+    }
+
+    public Connection getConnection() {
+        String url = null;
+        String username = null;
+        String password = null;
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        FileInputStream fis;
+        Properties properties = new Properties();
+
+        try {
+            fis = new FileInputStream("src/main/resources/application.properties");
+            properties.load(fis);
+
+            url = properties.getProperty("db.host");
+            username = properties.getProperty("db.user");
+            password = properties.getProperty("db.password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Connection conn = null;
+
+        try {
+            conn = DriverManager.getConnection(url, username, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conn;
     }
     public void connClose() {
         try {

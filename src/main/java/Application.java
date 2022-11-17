@@ -1,8 +1,11 @@
+import entities.Payment;
 import entities.Student;
 import sql.PaymentSQL;
 import sql.StudentSQL;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,9 +34,10 @@ public class Application {
 
             switch (decision) {
                 case 1:
-                    System.out.println("Enter the firstname, lastname and faculty (after each field click enter): ");
-                    List<String> case1 = new ArrayList<>();
                     Scanner getCase1 = new Scanner(System.in);
+                    List<String> case1 = new ArrayList<>();
+                    System.out.println("Enter the firstname, lastname and faculty (after each field click enter): ");
+
                     boolean quitCase1 = false;
 
                     Student student = new Student();
@@ -53,44 +57,56 @@ public class Application {
                     studentSQL.create(student);
                     break;
                 case 2:
-                    System.out.println("Enter the id of student: ");
                     Scanner getCase2 = new Scanner(System.in);
+                    System.out.println("Enter the id of student: ");
+
                     int inputCase21 = getCase2.nextInt();
                     System.out.println("Enter new faculty: ");
-                    String inputCase24 = getCase2.next();
-                    studentSQL.update(inputCase21, inputCase24);
 
+                    String inputCase22 = getCase2.next();
 
+                    studentSQL.update(inputCase21, inputCase22);
                     break;
                 case 3:
                     System.out.println("Enter the id of student which you want to remove: ");
                     Scanner getCase3 = new Scanner(System.in);
                     int inputCase3 = getCase3.nextInt();
+
                     studentSQL.delete(inputCase3);
                     break;
                 case 4:
-                    System.out.println("Enter the title, price and student id: ");
                     Scanner getCase4 = new Scanner(System.in);
+                    Payment payment = new Payment();
+                    System.out.println("Enter the title: ");
+
+
                     String inputCase41 = getCase4.nextLine();
+                    payment.setTitle(inputCase41);
+
+                    System.out.println("Enter price: ");
                     int inputCase42 = getCase4.nextInt();
+                    payment.setPrice(inputCase42);
+
+                    System.out.println("Enter student id: ");
                     int inputCase43 = getCase4.nextInt();
-                    paymentSQL.create(inputCase41, inputCase42, inputCase43);
+                    payment.setStudentId(inputCase43);
+
+                    payment.setDateOfPayment(new Timestamp(new Date().getTime()));
+
+                    paymentSQL.create(payment);
                     break;
                 case 5:
-                    System.out.println("Enter the price and id of the payment: ");
-                    List<Integer> case5 = new ArrayList<>();
+                    System.out.println("Enter payment id: ");
                     Scanner getCase5 = new Scanner(System.in);
-                    boolean quitCase2 = false;
-                    while (!quitCase2) {
-                        System.out.println("Enter 0 to quit.");
-                        Integer inputCase5 = getCase5.nextInt();
-                        if (inputCase5.equals(0)) {
-                            quitCase2 = true;
-                        } else {
-                            case5.add(inputCase5);
-                        }
-                    }
-                    paymentSQL.update(case5.get(0), case5.get(1));
+                    int inputCase51 = getCase5.nextInt();
+
+                    System.out.println("Enter new title: ");
+                    String inputCase52 = getCase5.next();
+
+                    System.out.println("Enter new price: ");
+                    int inputCase53 = getCase5.nextInt();
+
+                    paymentSQL.update(inputCase51, inputCase52, inputCase53);
                     break;
                 case 6:
                     System.out.println("Enter the student id: ");
@@ -109,6 +125,7 @@ public class Application {
                     break;
                 case 9:
                     studentSQL.getAllStudents();
+                    break;
                 case 10:
                     return;
             }
