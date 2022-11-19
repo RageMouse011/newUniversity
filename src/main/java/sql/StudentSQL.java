@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Properties;
 
 public class StudentSQL {
-    Connection conn = getConnection();
+    Connection conn = null;
+
     public Student create(Student student) {
         String create = "insert into student (first_name, last_name, faculty) values (?, ?, ?)";
         try {
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(create);
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
@@ -36,6 +38,7 @@ public class StudentSQL {
         String getUpdatedStudent = "select first_name, last_name, faculty from student where id = ?";
         Student student = new Student();
         try {
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(update);
             ps.setString(1, faculty);
             ps.setInt(2, id);
@@ -59,6 +62,7 @@ public class StudentSQL {
         } finally {
             connClose();
         }
+        System.out.println(student);
         return student;
     }
 
@@ -68,6 +72,7 @@ public class StudentSQL {
         String getDeletedStudent = "select first_name, last_name, faculty from student where id = ?";
         Student student = new Student();
         try {
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(deleteAllPayments);
             ps.setInt(1, id);
 
@@ -104,6 +109,7 @@ public class StudentSQL {
         String getStudentById = "select first_name, last_name, faculty from student where id =?";
         Student student = new Student();
         try {
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(getStudentById);
             ps.setInt(1, id);
 
@@ -129,6 +135,7 @@ public class StudentSQL {
         String getAllStudents = "select first_name, last_name, faculty from student";
         List<Student> result = new ArrayList<>();
         try {
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(getAllStudents);
 
             ResultSet rs = ps.executeQuery();

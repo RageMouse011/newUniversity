@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Properties;
 
 public class PaymentSQL {
-    Connection conn = getConnection();
+    Connection conn = null;
     public Payment create(Payment payment) {
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
         try {
-            getConnection();
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(create);
             ps.setString(1, payment.getTitle());
             ps.setTimestamp(2, payment.getDateOfPayment());
@@ -38,7 +38,7 @@ public class PaymentSQL {
         String getUpdatedPayment = "select title, date_of_payment, price, student_id from payment where id =?";
         Payment payment = new Payment();
         try {
-            getConnection();
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(update);
             ps.setString(1, title);
             ps.setInt(2, price);
@@ -73,7 +73,7 @@ public class PaymentSQL {
                 "on s.id = p.student_id group by s.id, s.first_name, s.last_name";
         List<String> result = new ArrayList<>();
         try {
-            getConnection();
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
 
             ResultSet rs = ps.executeQuery();
@@ -92,6 +92,7 @@ public class PaymentSQL {
         } finally {
             connClose();
         }
+        System.out.println(result);
         return result;
     }
 
@@ -100,7 +101,7 @@ public class PaymentSQL {
                 "on s.id = ? and p.student_id = ? group by s.first_name, s.last_name";
         List<String> result = new ArrayList<>();
         try {
-            getConnection();
+            conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
             ps.setInt(1, Id);
             ps.setInt(2, Id);
