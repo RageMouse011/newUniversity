@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -122,6 +123,40 @@ public class PaymentSQL {
             e.printStackTrace();
         } finally {
             connClose();
+        }
+        System.out.println(result);
+        return result;
+    }
+
+    public List<Payment> createPayments(List<Payment> payments) {
+        String createPayment = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
+        String addLastPayment = "update student set last_payment = ? where id = ?";
+        List<Payment> result = new ArrayList<>();
+
+        try {
+            conn = getConnection();
+            PreparedStatement cp = conn.prepareStatement(createPayment);
+            PreparedStatement alp = conn.prepareStatement(addLastPayment);
+
+            conn.setAutoCommit(false);
+
+            for (Payment p : payments) {
+                cp.setString(1, p.getTitle());
+                cp.setTimestamp(2 ,p.getDateOfPayment());
+                cp.setInt(3, p.getPrice());
+                cp.setInt(4, p.getStudentId());
+                cp.execute();
+                result.add(p);
+
+                alp.setTimestamp(1, new Timestamp(new Date().getTime()));
+                alp.setInt(2, p.getStudentId());
+                alp.execute();
+            }
+
+
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         System.out.println(result);
         return result;

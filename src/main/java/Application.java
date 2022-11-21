@@ -27,7 +27,8 @@ public class Application {
                      7. Retrieve all student's payments.\s
                      8. Retrieve specific student.\s
                      9. Retrieve all students.\s
-                     10. Choose to quit the program""");
+                     10. Create several payments.
+                     11. Choose to quit the program""");
 
             Scanner input = new Scanner(System.in);
             int decision = input.nextInt();
@@ -75,11 +76,11 @@ public class Application {
                     studentSQL.delete(inputCase3);
                     break;
                 case 4:
-                    Scanner getCase4 = new Scanner(System.in);
                     Payment payment = new Payment();
+                    Scanner getCase4 = new Scanner(System.in);
+
+
                     System.out.println("Enter the title: ");
-
-
                     String inputCase41 = getCase4.nextLine();
                     payment.setTitle(inputCase41);
 
@@ -127,6 +128,33 @@ public class Application {
                     studentSQL.getAllStudents();
                     break;
                 case 10:
+                    List<Payment> payments = new ArrayList<>();
+                    Scanner getCase10 = new Scanner(System.in);
+
+                    System.out.println("Enter count of payments you want to add:  ");
+                    int inputCase101 = getCase10.nextInt();
+
+                    for (int i = 0; i < inputCase101; i++) {
+                        Payment anotherPayment = new Payment();
+
+                        System.out.println("Enter the title of the payment: ");
+                        String inputCase102 = getCase10.next();
+                        anotherPayment.setTitle(inputCase102);
+
+                        System.out.println("Enter the price of the the payment: ");
+                        int inputCase103 = getCase10.nextInt();
+                        anotherPayment.setPrice(inputCase103);
+
+                        System.out.println("Enter student id of the first payment: ");
+                        int inputCase104 = getCase10.nextInt();
+                        anotherPayment.setStudentId(inputCase104);
+
+                        anotherPayment.setDateOfPayment(new Timestamp(new Date().getTime()));
+                        payments.add(anotherPayment);
+                    }
+                    paymentSQL.createPayments(payments);
+                    break;
+                case 11:
                     return;
             }
         }
