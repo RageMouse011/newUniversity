@@ -11,6 +11,7 @@ import java.util.Properties;
 
 public class PaymentSQL {
     Connection conn = null;
+
     public Payment create(Payment payment) {
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
         try {
