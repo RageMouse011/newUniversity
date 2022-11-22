@@ -145,7 +145,7 @@ public class Application {
                         int inputCase103 = getCase10.nextInt();
                         anotherPayment.setPrice(inputCase103);
 
-                        System.out.println("Enter student id of the first payment: ");
+                        System.out.println("Enter student id of the payment: ");
                         int inputCase104 = getCase10.nextInt();
                         anotherPayment.setStudentId(inputCase104);
 

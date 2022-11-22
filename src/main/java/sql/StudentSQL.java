@@ -1,11 +1,13 @@
 package sql;
 
+import entities.Payment;
 import entities.Student;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -149,6 +151,30 @@ public class StudentSQL {
 
             ps.close();
             rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connClose();
+        }
+        System.out.println(result);
+        return result;
+    }
+
+    public boolean updateLastPayment(List<Payment> payments) {
+        String addLastPayment = "update student set last_payment = ? where id = ?";
+        boolean result = false;
+        try {
+            conn = getConnection();
+            PreparedStatement ps = conn.prepareStatement(addLastPayment);
+
+            for(Payment p : payments) {
+                ps.setTimestamp(1, p.getDateOfPayment());
+                ps.setInt(2, p.getStudentId());
+                ps.execute();
+            }
+            result = true;
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

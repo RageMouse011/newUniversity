@@ -12,6 +12,7 @@ import java.util.Properties;
 
 public class PaymentSQL {
     Connection conn = null;
+    StudentSQL studentSQL = new StudentSQL();
 
     public Payment create(Payment payment) {
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
@@ -130,14 +131,14 @@ public class PaymentSQL {
 
     public List<Payment> createPayments(List<Payment> payments) {
         String createPayment = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
-        String addLastPayment = "update student set last_payment = ? where id = ?";
-        List<Payment> result = new ArrayList<>();
+        String idOfSelectedStudents = "select student_id from payment where student_id = ? group by student_id";
+        List<Payment> creatingResult = new ArrayList<>();
+        List<Integer> SumOfStudentsPayments = new ArrayList<>();
 
         try {
             conn = getConnection();
             PreparedStatement cp = conn.prepareStatement(createPayment);
-            PreparedStatement alp = conn.prepareStatement(addLastPayment);
-
+            PreparedStatement getSum = conn.prepareStatement(idOfSelectedStudents);
             conn.setAutoCommit(false);
 
             for (Payment p : payments) {
@@ -146,20 +147,24 @@ public class PaymentSQL {
                 cp.setInt(3, p.getPrice());
                 cp.setInt(4, p.getStudentId());
                 cp.execute();
-                result.add(p);
+                creatingResult.add(p);
 
-                alp.setTimestamp(1, new Timestamp(new Date().getTime()));
-                alp.setInt(2, p.getStudentId());
-                alp.execute();
+                getSum.setInt(1, p.getStudentId());
+                ResultSet rs = getSum.executeQuery();
+
+                while(rs.next()) {
+                    SumOfStudentsPayments.add(rs.getInt("student_id"));
+                }
             }
-
-
             conn.commit();
+
+            studentSQL.updateLastPayment(creatingResult);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(result);
-        return result;
+        System.out.println(SumOfStudentsPayments);
+        System.out.println(creatingResult);
+        return creatingResult;
     }
 
     public Connection getConnection() {
