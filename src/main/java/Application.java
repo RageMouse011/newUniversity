@@ -153,6 +153,7 @@ public class Application {
                         payments.add(anotherPayment);
                     }
                     paymentSQL.createPayments(payments);
+                    studentSQL.updateLastPayment(payments);
                     break;
                 case 11:
                     return;

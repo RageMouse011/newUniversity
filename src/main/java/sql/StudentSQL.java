@@ -160,28 +160,37 @@ public class StudentSQL {
         return result;
     }
 
-    public boolean updateLastPayment(List<Payment> payments) {
+    public List<Integer> updateLastPayment(List<Payment> payments) {
         String addLastPayment = "update student set last_payment = ? where id = ?";
-        boolean result = false;
+        String idOfSelectedStudents = "select student_id from payment where student_id = ? group by student_id";
+        List<Integer> SumOfStudentsPayments = new ArrayList<>();
         try {
             conn = getConnection();
-            PreparedStatement ps = conn.prepareStatement(addLastPayment);
+            PreparedStatement alp = conn.prepareStatement(addLastPayment);
+            PreparedStatement ids = conn.prepareStatement(idOfSelectedStudents);
+            conn.setAutoCommit(false);
 
             for(Payment p : payments) {
-                ps.setTimestamp(1, p.getDateOfPayment());
-                ps.setInt(2, p.getStudentId());
-                ps.execute();
-            }
-            result = true;
+                alp.setTimestamp(1, p.getDateOfPayment());
+                alp.setInt(2, p.getStudentId());
+                alp.execute();
 
+                ids.setInt(1, p.getStudentId());
+                ResultSet rs = ids.executeQuery();
+
+                while(rs.next()) {
+                    SumOfStudentsPayments.add(rs.getInt("student_id"));
+                }
+            }
+            conn.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             connClose();
         }
-        System.out.println(result);
-        return result;
+        System.out.println(SumOfStudentsPayments);
+        return SumOfStudentsPayments;
     }
 
     public Connection getConnection() {

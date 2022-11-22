@@ -131,15 +131,11 @@ public class PaymentSQL {
 
     public List<Payment> createPayments(List<Payment> payments) {
         String createPayment = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
-        String idOfSelectedStudents = "select student_id from payment where student_id = ? group by student_id";
         List<Payment> creatingResult = new ArrayList<>();
-        List<Integer> SumOfStudentsPayments = new ArrayList<>();
 
         try {
             conn = getConnection();
             PreparedStatement cp = conn.prepareStatement(createPayment);
-            PreparedStatement getSum = conn.prepareStatement(idOfSelectedStudents);
-            conn.setAutoCommit(false);
 
             for (Payment p : payments) {
                 cp.setString(1, p.getTitle());
@@ -148,21 +144,11 @@ public class PaymentSQL {
                 cp.setInt(4, p.getStudentId());
                 cp.execute();
                 creatingResult.add(p);
-
-                getSum.setInt(1, p.getStudentId());
-                ResultSet rs = getSum.executeQuery();
-
-                while(rs.next()) {
-                    SumOfStudentsPayments.add(rs.getInt("student_id"));
-                }
             }
-            conn.commit();
 
-            studentSQL.updateLastPayment(creatingResult);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(SumOfStudentsPayments);
         System.out.println(creatingResult);
         return creatingResult;
     }
