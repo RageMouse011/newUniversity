@@ -5,10 +5,8 @@ import entities.Payment;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 
 public class PaymentSQL {
     Connection conn = null;
@@ -131,14 +129,12 @@ public class PaymentSQL {
 
     public List<Payment> createPayments(List<Payment> payments) {
         String createPayment = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
-        String idOfSelectedStudents = "select student_id from payment where student_id = ? group by student_id";
+        String updatePayment =  studentSQL.updateLastPayment();
         List<Payment> creatingResult = new ArrayList<>();
-        List<Integer> SumOfStudentsPayments = new ArrayList<>();
-
         try {
             conn = getConnection();
             PreparedStatement cp = conn.prepareStatement(createPayment);
-            PreparedStatement getSum = conn.prepareStatement(idOfSelectedStudents);
+            PreparedStatement sup = conn.prepareStatement(updatePayment);
             conn.setAutoCommit(false);
 
             for (Payment p : payments) {
@@ -149,20 +145,16 @@ public class PaymentSQL {
                 cp.execute();
                 creatingResult.add(p);
 
-                getSum.setInt(1, p.getStudentId());
-                ResultSet rs = getSum.executeQuery();
-
-                while(rs.next()) {
-                    SumOfStudentsPayments.add(rs.getInt("student_id"));
-                }
+                sup.setTimestamp(1, p.getDateOfPayment());
+                sup.setInt(2, p.getStudentId());
             }
+            sup.execute();
             conn.commit();
-
-            studentSQL.updateLastPayment(creatingResult);
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connClose();
         }
-        System.out.println(SumOfStudentsPayments);
         System.out.println(creatingResult);
         return creatingResult;
     }

@@ -160,28 +160,9 @@ public class StudentSQL {
         return result;
     }
 
-    public boolean updateLastPayment(List<Payment> payments) {
+    public String updateLastPayment() {
         String addLastPayment = "update student set last_payment = ? where id = ?";
-        boolean result = false;
-        try {
-            conn = getConnection();
-            PreparedStatement ps = conn.prepareStatement(addLastPayment);
-
-            for(Payment p : payments) {
-                ps.setTimestamp(1, p.getDateOfPayment());
-                ps.setInt(2, p.getStudentId());
-                ps.execute();
-            }
-            result = true;
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connClose();
-        }
-        System.out.println(result);
-        return result;
+        return addLastPayment;
     }
 
     public Connection getConnection() {
