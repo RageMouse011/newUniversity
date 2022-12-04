@@ -1,5 +1,6 @@
 package database;
 
+import database.util.ConnectionPool;
 import entities.Payment;
 import entities.Student;
 
@@ -10,13 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static database.util.Resources.*;
+
 public class StudentSQL {
+    ConnectionPool pool = new ConnectionPool(dbUrl, dbUser, dbPass, 5);
     Connection conn = null;
 
     public Student create(Student student) {
         String create = "insert into student (first_name, last_name, faculty) values (?, ?, ?)";
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(create);
             ps.setString(1, student.getFirstName());
             ps.setString(2, student.getLastName());
@@ -28,7 +32,13 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(student);
         return student;
@@ -39,7 +49,7 @@ public class StudentSQL {
         String getUpdatedStudent = "select first_name, last_name, faculty from student where id = ?";
         Student student = new Student();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(update);
             ps.setString(1, faculty);
             ps.setInt(2, id);
@@ -61,7 +71,13 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(student);
         return student;
@@ -73,7 +89,7 @@ public class StudentSQL {
         String getDeletedStudent = "select first_name, last_name, faculty from student where id = ?";
         Student student = new Student();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(deleteAllPayments);
             ps.setInt(1, id);
 
@@ -100,7 +116,13 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(student);
         return student;
@@ -110,7 +132,7 @@ public class StudentSQL {
         String getStudentById = "select first_name, last_name, faculty from student where id =?";
         Student student = new Student();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(getStudentById);
             ps.setInt(1, id);
 
@@ -126,7 +148,13 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(student);
         return student;
@@ -136,7 +164,7 @@ public class StudentSQL {
         String getAllStudents = "select first_name, last_name, faculty from student";
         List<Student> result = new ArrayList<>();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(getAllStudents);
 
             ResultSet rs = ps.executeQuery();
@@ -153,7 +181,13 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(result);
         return result;
@@ -164,7 +198,7 @@ public class StudentSQL {
         String idOfSelectedStudents = "select student_id from payment where student_id = ? group by student_id";
         List<Integer> SumOfStudentsPayments = new ArrayList<>();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement alp = conn.prepareStatement(addLastPayment);
             PreparedStatement ids = conn.prepareStatement(idOfSelectedStudents);
             conn.setAutoCommit(false);
@@ -186,51 +220,15 @@ public class StudentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(SumOfStudentsPayments);
         return SumOfStudentsPayments;
-    }
-
-    public Connection getConnection() {
-        String url = null;
-        String username = null;
-        String password = null;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        FileInputStream fis;
-        Properties properties = new Properties();
-
-        try {
-            fis = new FileInputStream("src/main/resources/application.properties");
-            properties.load(fis);
-
-            url = properties.getProperty("db.host");
-            username = properties.getProperty("db.user");
-            password = properties.getProperty("db.password");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Connection conn = null;
-
-        try {
-            conn = DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }
-    public void connClose() {
-        try {
-            this.conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

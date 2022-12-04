@@ -1,16 +1,26 @@
+package application;
+
+import database.util.ConnectionPool;
 import entities.Payment;
 import entities.Student;
 import database.PaymentSQL;
 import database.StudentSQL;
 
+import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Application {
+
+    ResourceBundle resource = ResourceBundle.getBundle("application");
+    String dbUrl = resource.getString("dbUrl");
+    String dbUser = resource.getString("dbUser");
+    String dbPass = resource.getString("dbPass");
+
+    ConnectionPool pool = new ConnectionPool(dbUrl, dbUser, dbPass, 5);
+    Connection conn = null;
+
     public static void main(String[] args) {
         StudentSQL studentSQL = new StudentSQL();
         PaymentSQL paymentSQL = new PaymentSQL();

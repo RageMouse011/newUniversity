@@ -1,22 +1,23 @@
 package database;
 
+import database.util.ConnectionPool;
 import entities.Payment;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
+import static database.util.Resources.*;
 
 public class PaymentSQL {
+    ConnectionPool pool = new ConnectionPool(dbUrl, dbUser, dbPass, 5);
     Connection conn = null;
-    StudentSQL studentSQL = new StudentSQL();
+
 
     public Payment create(Payment payment) {
         String create = "insert into payment (title, date_of_payment, price, student_id) values (?, ?, ?, ?)";
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(create);
             ps.setString(1, payment.getTitle());
             ps.setTimestamp(2, payment.getDateOfPayment());
@@ -29,7 +30,13 @@ public class PaymentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(payment);
         return payment;
@@ -40,7 +47,7 @@ public class PaymentSQL {
         String getUpdatedPayment = "select title, date_of_payment, price, student_id from payment where id =?";
         Payment payment = new Payment();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(update);
             ps.setString(1, title);
             ps.setInt(2, price);
@@ -64,7 +71,13 @@ public class PaymentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(payment);
         return payment;
@@ -75,7 +88,7 @@ public class PaymentSQL {
                 "on s.id = p.student_id group by s.id, s.first_name, s.last_name";
         List<String> result = new ArrayList<>();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
 
             ResultSet rs = ps.executeQuery();
@@ -92,7 +105,13 @@ public class PaymentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(result);
         return result;
@@ -103,7 +122,7 @@ public class PaymentSQL {
                 "on s.id = ? and p.student_id = ? group by s.first_name, s.last_name";
         List<String> result = new ArrayList<>();
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(retrieve);
             ps.setInt(1, Id);
             ps.setInt(2, Id);
@@ -122,7 +141,13 @@ public class PaymentSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connClose();
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(result);
         return result;
@@ -133,7 +158,7 @@ public class PaymentSQL {
         List<Payment> creatingResult = new ArrayList<>();
 
         try {
-            conn = getConnection();
+            conn = pool.getConnection();
             PreparedStatement cp = conn.prepareStatement(createPayment);
 
             for (Payment p : payments) {
@@ -147,50 +172,16 @@ public class PaymentSQL {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    pool.returnConnection(conn);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         System.out.println(creatingResult);
         return creatingResult;
-    }
-
-    public Connection getConnection() {
-        String url = null;
-        String username = null;
-        String password = null;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        FileInputStream fis;
-        Properties properties = new Properties();
-
-        try {
-            fis = new FileInputStream("src/main/resources/application.properties");
-            properties.load(fis);
-
-            url = properties.getProperty("db.host");
-            username = properties.getProperty("db.user");
-            password = properties.getProperty("db.password");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Connection conn = null;
-
-        try {
-            conn = DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }
-    public void connClose() {
-        try {
-            this.conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }
