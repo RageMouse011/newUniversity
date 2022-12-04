@@ -1,7 +1,7 @@
 import entities.Payment;
 import entities.Student;
-import sql.PaymentSQL;
-import sql.StudentSQL;
+import database.PaymentSQL;
+import database.StudentSQL;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -36,49 +36,44 @@ public class Application {
             switch (decision) {
                 case 1:
                     Scanner getCase1 = new Scanner(System.in);
-                    List<String> case1 = new ArrayList<>();
-                    System.out.println("Enter the firstname, lastname and faculty (after each field click enter): ");
-
-                    boolean quitCase1 = false;
-
                     Student student = new Student();
-                    while (!quitCase1) {
-                        System.out.println("Enter q to quit.");
-                        String inputCase1 = getCase1.nextLine();
-                        if (inputCase1.equals("q")) {
-                            quitCase1 = true;
-                        } else {
-                            case1.add(inputCase1);
-                        }
-                    }
-                    student.setFirstName(case1.get(0));
-                    student.setLastName(case1.get(1));
-                    student.setFaculty(case1.get(2));
+
+                    System.out.println("Enter  firstname: ");
+                    String inputCase11 = getCase1.nextLine();
+                    student.setFirstName(inputCase11);
+
+                    System.out.println("Enter  lastname: ");
+                    String inputCase12 = getCase1.nextLine();
+                    student.setLastName(inputCase12);
+
+                    System.out.println("Enter  faculty: ");
+                    String inputCase13 = getCase1.nextLine();
+                    student.setFaculty(inputCase13);
 
                     studentSQL.create(student);
                     break;
                 case 2:
                     Scanner getCase2 = new Scanner(System.in);
+
                     System.out.println("Enter the id of student: ");
-
                     int inputCase21 = getCase2.nextInt();
-                    System.out.println("Enter new faculty: ");
 
+                    System.out.println("Enter new faculty: ");
                     String inputCase22 = getCase2.next();
 
                     studentSQL.update(inputCase21, inputCase22);
                     break;
                 case 3:
-                    System.out.println("Enter the id of student which you want to remove: ");
                     Scanner getCase3 = new Scanner(System.in);
+
+                    System.out.println("Enter the id of student which you want to remove: ");
                     int inputCase3 = getCase3.nextInt();
 
                     studentSQL.delete(inputCase3);
                     break;
                 case 4:
-                    Payment payment = new Payment();
                     Scanner getCase4 = new Scanner(System.in);
-
+                    Payment payment = new Payment();
 
                     System.out.println("Enter the title: ");
                     String inputCase41 = getCase4.nextLine();
@@ -97,8 +92,9 @@ public class Application {
                     paymentSQL.create(payment);
                     break;
                 case 5:
-                    System.out.println("Enter payment id: ");
                     Scanner getCase5 = new Scanner(System.in);
+
+                    System.out.println("Enter payment id: ");
                     int inputCase51 = getCase5.nextInt();
 
                     System.out.println("Enter new title: ");
@@ -110,26 +106,30 @@ public class Application {
                     paymentSQL.update(inputCase51, inputCase52, inputCase53);
                     break;
                 case 6:
-                    System.out.println("Enter the student id: ");
                     Scanner getCase6 = new Scanner(System.in);
+
+                    System.out.println("Enter the student id: ");
                     int inputCase6 = getCase6.nextInt();
+
                     paymentSQL.retrieveStudentsPayments(inputCase6);
                     break;
                 case 7:
                     paymentSQL.retrieveAllStudentsPayments();
                     break;
                 case 8:
-                    System.out.println("Enter the student id: ");
                     Scanner getCase8 = new Scanner(System.in);
+
+                    System.out.println("Enter the student id: ");
                     int inputCase8 = getCase8.nextInt();
+
                     studentSQL.getStudentById(inputCase8);
                     break;
                 case 9:
                     studentSQL.getAllStudents();
                     break;
                 case 10:
-                    List<Payment> payments = new ArrayList<>();
                     Scanner getCase10 = new Scanner(System.in);
+                    List<Payment> payments = new ArrayList<>();
 
                     System.out.println("Enter count of payments you want to add:  ");
                     int inputCase101 = getCase10.nextInt();
