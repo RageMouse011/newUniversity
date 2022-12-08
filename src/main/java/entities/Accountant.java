@@ -12,7 +12,7 @@ public class Accountant extends UniversityStaff {
                       String firstName,
                       String lastName,
                       int experience,
-                      int salary,
+                      double salary,
                       String department) {
         super(faculty, firstName, lastName, experience, salary);
         this.department = department;

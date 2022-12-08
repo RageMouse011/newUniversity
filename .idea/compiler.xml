@@ -10,5 +10,8 @@
         <module name="Git Projects" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="university" target="19" />
+    </bytecodeTargetLevel>
   </component>
 </project>

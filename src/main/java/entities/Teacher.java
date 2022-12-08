@@ -13,7 +13,7 @@ public class Teacher extends UniversityStaff{
                    String firstName,
                    String lastName,
                    int experience,
-                   int salary,
+                   double salary,
                    String subject) {
         super(faculty, firstName, lastName, experience, salary);
         this.subject = subject;

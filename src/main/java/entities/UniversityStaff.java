@@ -4,7 +4,7 @@ public class UniversityStaff extends Person{
 
     private static int countOfStaff;
     private int experience;
-    private int salary;
+    private double salary;
 
     public UniversityStaff() {
         super();
@@ -15,7 +15,7 @@ public class UniversityStaff extends Person{
                            String firstName,
                            String lastName,
                            int experience,
-                           int salary) {
+                           double salary) {
         super(faculty, firstName, lastName);
         this.experience = experience;
         this.salary = salary;
@@ -30,7 +30,7 @@ public class UniversityStaff extends Person{
         this.experience = experience;
     }
 
-    public int getSalary() {
+    public double getSalary() {
         return salary;
     }
 
