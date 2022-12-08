@@ -14,7 +14,7 @@ public class ConnectionPool {
     private String userName;
     private String password;
 
-    private int maxPoolSize = 10; // Можно сделать еще минимальное количество подключений.
+    private int maxPoolSize; // Можно сделать еще минимальное количество подключений.
     private int connNum = 0;
 
     private static final String SQL_VERIFYCONN = "select 1"; // ты живой?
@@ -30,7 +30,7 @@ public class ConnectionPool {
     }
     // synchronized - потокозащещённый, тоесть с ним может работать только один поток, остальные ждут.
     public synchronized Connection getConnection() throws SQLException {
-        Connection conn = null;
+        Connection conn;
         if (isFull()) {  // isFull - метод реалезованный далее отвечающий за проверку заполненности пула.
             throw new SQLException("The connection pool is full.");
         }
@@ -66,7 +66,7 @@ public class ConnectionPool {
 
     private Connection createNewConnection() throws SQLException { // создает коннекшн через драйвер, приватный (внутренний класс)
         // Можно было прописать в createNewConnectionPool, но был вынесен для ясности.
-        Connection conn = null;
+        Connection conn;
         conn = DriverManager.getConnection(databaseUrl, userName, password);
         return conn;
     }

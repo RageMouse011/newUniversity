@@ -1,18 +1,14 @@
 package application;
 
-import database.util.ConnectionPool;
 import entities.Payment;
 import entities.Student;
 import database.PaymentSQL;
 import database.StudentSQL;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.*;
 
-
 public class Application {
-
     public static void main(String[] args) {
         StudentSQL studentSQL = new StudentSQL();
         PaymentSQL paymentSQL = new PaymentSQL();
