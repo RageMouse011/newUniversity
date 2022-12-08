@@ -4,6 +4,8 @@ import entities.Payment;
 import entities.Student;
 import database.PaymentSQL;
 import database.StudentSQL;
+import entities.Teacher;
+import entities.UniversityStaff;
 
 import java.sql.Timestamp;
 import java.util.*;
